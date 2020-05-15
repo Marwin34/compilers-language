@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from enum import Enum
 import math
 import copy
 
@@ -13,6 +14,11 @@ function_scopes = {}
 nodes_count = 0
 
 scopes = Scopes()
+
+
+class OptimizeMethod:
+    LEFT = 1
+    RIGHT = 2
 
 
 def node_id():
@@ -62,6 +68,7 @@ class Block(Node):
     def __init__(self, statements):
         super().__init__()
 
+        self.used_symboles = set()
         self.statements = statements
         self.id = str(self)
 
@@ -73,12 +80,35 @@ class Block(Node):
 
         return value
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         new_statements = []
         for statement in self.statements:
-            new_statements.append(statement.optimize())
+            new_statements.append(
+                statement.optimize(self.used_symboles, OptimizeMethod.LEFT)
+            )
 
-        self.statements = new_statements
+        dead_code_free = []
+        for statement in new_statements:
+            if (
+                type(statement) == AssignWithType
+                or type(statement) == Assign
+                or type(statement) == TypeDeclare
+            ):
+                name = statement.name.serve()
+                if name not in self.used_symboles:
+                    continue
+            elif type(statement) == Function:
+                name = statement.name.serve()
+                if name not in self.used_symboles:
+                    continue
+
+            dead_code_free.append(statement)
+
+        self.statements = dead_code_free
+
+        if used_symboles is not None:
+            used_symboles.update(self.used_symboles)
+
         return self
 
     def draw(self, graph, parent_id):
@@ -102,8 +132,8 @@ class UMinus(Node):
     def serve(self):
         return -self.statement.serve()
 
-    def optimize(self):
-        self.statement = self.statement.optimize()
+    def optimize(self, used_symboles, optimize_method):
+        self.statement = self.statement.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -132,7 +162,9 @@ class Condition(Node):
         else:
             return None
 
-    def optimize(self):
+    def optimize(self, used_symboles, optimize_method):
+        self.condition.optimize(used_symboles, OptimizeMethod.RIGHT)
+        self.action = self.action.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -166,8 +198,8 @@ class While(Node):
 
         return value
 
-    def optimize(self):
-        self.block = self.block.optimize()
+    def optimize(self, used_symboles=None, optimize_method=None):
+        self.block = self.block.optimize(used_symboles)
 
         return self
 
@@ -207,8 +239,8 @@ class For(Node):
 
         return value
 
-    def optimize(self):
-        self.block = self.block.optimize()
+    def optimize(self, used_symboles, optimize_method):
+        self.block = self.block.optimize(used_symboles)
         return self
 
     def draw(self, graph, parent_id):
@@ -252,9 +284,9 @@ class Relation(Node):
         else:
             return False
 
-    def optimize(self):
-        self.left = self.left.optimize()
-        self.right = self.right.optimize()
+    def optimize(self, used_symboles, optimize_method):
+        self.left = self.left.optimize(used_symboles, OptimizeMethod.RIGHT)
+        self.right = self.right.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -308,15 +340,9 @@ class Operator(Node):
             print(f"Unsupported operator {self.operator}.")
             return None
 
-    def optimize(self):
-        self.left_part = self.left_part.optimize()
-        self.right_part = self.right_part.optimize()
-
-        # left_part = self.left_part.serve()
-        # right_part = self.right_part.serve()
-
-        # if type(left_part) != type(right_part):
-        # return self
+    def optimize(self, used_symboles, optimize_method):
+        self.left_part = self.left_part.optimize(used_symboles, OptimizeMethod.RIGHT)
+        self.right_part = self.right_part.optimize(used_symboles, OptimizeMethod.RIGHT)
 
         if (
             type(self.left_part) == IntVal or type(self.left_part) == FloatVal
@@ -430,8 +456,8 @@ class Print(Node):
         print(value)
         return None
 
-    def optimize(self):
-        self.statement = self.statement.optimize()
+    def optimize(self, used_symboles, optimize_method=None):
+        self.statement = self.statement.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -457,8 +483,8 @@ class Assign(Node):
 
         return None
 
-    def optimize(self):
-        self.value = self.value.optimize()
+    def optimize(self, used_symboles, optimize_method=None):
+        self.value = self.value.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -485,7 +511,7 @@ class TypeDeclare(Node):
 
         return None
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -512,8 +538,8 @@ class AssignWithType(Node):
 
         return None
 
-    def optimize(self):
-        self.value = self.value.optimize()
+    def optimize(self, used_symboles, optimize_method=None):
+        self.value = self.value.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -543,7 +569,8 @@ class Cast(Node):
 
         return new_val
 
-    def optimize(self):
+    def optimize(self, used_symboles, optimize_method=None):
+        self.value = self.value.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
     def draw(self, graph, parent_id):
@@ -575,7 +602,7 @@ class Args(Node):
 
         return parsed_arguments
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -608,7 +635,7 @@ class ArgsVal(Node):
 
         return values
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         new_arguments = []
 
         for argument in self.arguments:
@@ -652,8 +679,8 @@ class Function(Node):
             functions[name] = {"args": args, "block": self.block}
             return None
 
-    def optimize(self):
-        self.block = self.block.optimize()
+    def optimize(self, used_symboles, optimize_method=None):
+        self.block = self.block.optimize(used_symboles)
         return self
 
     def draw(self, graph, parent_id):
@@ -707,7 +734,10 @@ class Call(Node):
 
                 return res
 
-    def optimize(self):
+    def optimize(self, used_symboles, optimize_method=None):
+        name = self.name.serve()
+        used_symboles.add(name)
+
         return self
 
     def draw(self, graph, parent_id):
@@ -728,7 +758,7 @@ class FloatVal(Node):
     def serve(self):
         return float(self.value)
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -748,7 +778,7 @@ class IntVal(Node):
     def serve(self):
         return int(self.value)
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -768,7 +798,7 @@ class StringVal(Node):
     def serve(self):
         return self.value
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -788,7 +818,7 @@ class NameVal(Node):
     def serve(self):
         return self.name
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -808,7 +838,9 @@ class KeyVal(Node):
     def serve(self):
         return scopes.get(self.key)
 
-    def optimize(self):
+    def optimize(self, used_symboles, optimize_method):
+        if optimize_method == OptimizeMethod.RIGHT:
+            used_symboles.add(self.key)
         return self
 
     def draw(self, graph, parent_id):
@@ -833,7 +865,7 @@ class TypeVal(Node):
 
         return None
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
@@ -854,7 +886,7 @@ class BoolVal(Node):
     def serve(self):
         return self.value
 
-    def optimize(self):
+    def optimize(self, used_symboles=None, optimize_method=None):
         return self
 
     def draw(self, graph, parent_id):
