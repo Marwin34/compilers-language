@@ -719,13 +719,13 @@ class Call(Node):
 
             args_val = self.args.serve() if self.args is not None else None
 
-            if function['args'] is None:
+            if function["args"] is None:
                 if args_val is not None:
                     print(f"Arguments count missmatch in function {name}.")
                     return None
                 else:
                     scopes.add_scope()
-                    res = function['block'].serve()
+                    res = function["block"].serve()
                     scopes.remove_scope()
 
                     return res

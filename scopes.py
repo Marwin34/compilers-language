@@ -79,7 +79,7 @@ class Scopes:
         super().__init__()
 
         self.scopes_list = []
-        self.add_scope() # global scope
+        self.add_scope()  # global scope
 
     def add_scope(self):
         self.scopes_list.append(Scope())
