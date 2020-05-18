@@ -165,6 +165,11 @@ def p_statement_function(p):
     p[0] = tree.Function(tree.NameVal(p[2]), p[4], p[8])
 
 
+def p_statement_no_args_function(p):
+    " statement : FUNCTION NAME '(' ')' '=' '{' block '}'"
+    p[0] = tree.Function(tree.NameVal(p[2]), None, p[7])
+
+
 def p_statement_expr(p):
     """ statement   : expression
                     | relation """
@@ -231,6 +236,11 @@ def p_expression_cast(p):
 def p_expression_call(p):
     "expression : NAME '(' args_val ')' "
     p[0] = tree.Call(tree.NameVal(p[1]), p[3])
+
+
+def p_expression_call_no_args(p):
+    "expression : NAME '(' ')' "
+    p[0] = tree.Call(tree.NameVal(p[1]), None)
 
 
 def p_expression_float(p):

@@ -682,11 +682,7 @@ class Function(Node):
         if not scopes.available_name(name):
             print(f"{name} already exist.")
         else:
-            args = self.args.serve()
-
-            if args is None:
-                print(f"Error in function definition {name}.")
-                return None
+            args = self.args.serve() if self.args is not None else None
 
             functions[name] = {"args": args, "block": self.block}
             return None
@@ -700,7 +696,8 @@ class Function(Node):
         graph.edge(parent_id, self.id)
 
         self.name.draw(graph, self.id)
-        self.args.draw(graph, self.id)
+        if self.args is not None:
+            self.args.draw(graph, self.id)
         self.block.draw(graph, self.id)
 
 
@@ -720,31 +717,46 @@ class Call(Node):
         else:
             function = functions[name]
 
-            args_val = self.args.serve()
-            if len(args_val) != len(function["args"]):
-                print(f"Arguments count missmatch in function {name}.")
-                return None
+            args_val = self.args.serve() if self.args is not None else None
+
+            if function['args'] is None:
+                if args_val is not None:
+                    print(f"Arguments count missmatch in function {name}.")
+                    return None
+                else:
+                    scopes.add_scope()
+                    res = function['block'].serve()
+                    scopes.remove_scope()
+
+                    return res
             else:
-                scopes.add_scope()
-                valid_args = True
-                res = None
+                if args_val is not None and function["args"] is None:
 
-                for i in range(len(args_val)):
-                    arg_name = function["args"][i][0]
-                    arg_type = function["args"][i][1]
-                    arg_value = args_val[i]
-                    given_arg_type = determine_type(arg_value)
+                    return None
+                if len(args_val) != len(function["args"]):
+                    print(f"Arguments count missmatch in function {name}.")
+                    return None
+                else:
+                    scopes.add_scope()
+                    valid_args = True
+                    res = None
 
-                    arg_value = convert_to(arg_value, arg_type)
+                    for i in range(len(args_val)):
+                        arg_name = function["args"][i][0]
+                        arg_type = function["args"][i][1]
+                        arg_value = args_val[i]
+                        given_arg_type = determine_type(arg_value)
 
-                    scopes.define(arg_name, arg_value)
+                        arg_value = convert_to(arg_value, arg_type)
 
-                if valid_args:
-                    res = function["block"].serve()
+                        scopes.define(arg_name, arg_value)
 
-                scopes.remove_scope()
+                    if valid_args:
+                        res = function["block"].serve()
 
-                return res
+                    scopes.remove_scope()
+
+                    return res
 
     def optimize(self, used_symboles, optimize_method=None):
         name = self.name.serve()
@@ -757,7 +769,8 @@ class Call(Node):
         graph.edge(parent_id, self.id)
 
         self.name.draw(graph, self.id)
-        self.args.draw(graph, self.id)
+        if self.args is not None:
+            self.args.draw(graph, self.id)
 
 
 class FloatVal(Node):
