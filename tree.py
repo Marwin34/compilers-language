@@ -158,7 +158,11 @@ class Condition(Node):
             return None
 
         if condition_value:
-            return self.action.serve()
+            scopes.add_scope()
+            value = self.action.serve()
+            scopes.remove_scope()
+
+            return value
         else:
             return None
 
@@ -186,6 +190,8 @@ class While(Node):
     def serve(self):
         value = None
 
+        scopes.add_scope()
+
         condition_value = self.condition.serve()
         if type(condition_value) is not bool:
             print(f"Invalid syntax: condition is not a bool type.")
@@ -195,6 +201,8 @@ class While(Node):
             value = self.block.serve()
 
             condition_value = self.condition.serve()
+
+        scopes.remove_scope()
 
         return value
 
@@ -224,6 +232,8 @@ class For(Node):
     def serve(self):
         value = None
 
+        scopes.add_scope()
+
         self.init.serve()
 
         condition_value = self.condition.serve()
@@ -236,6 +246,8 @@ class For(Node):
             value = self.block.serve()
 
             condition_value = self.condition.serve()
+
+        scopes.remove_scope()
 
         return value
 
