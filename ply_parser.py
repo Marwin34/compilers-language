@@ -215,11 +215,13 @@ def p_relation_operators(p):
     """  relation : expression RELATION expression """
     p[0] = tree.Relation(p[2], p[1], p[3])
 
+
 """
 def p_unary_minus(p):
     " expression : '-' expression"
     p[0] = tree.UMinus(p[2])
 """
+
 
 def p_expression_cast(p):
     " expression : CAST '(' statement ',' NAME ')'"
@@ -262,6 +264,7 @@ def p_error(p):
 
 parser = yacc.yacc()
 # Test it out
+
 
 def parse_file(path):
     with open(path, "r") as f:
