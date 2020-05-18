@@ -263,8 +263,14 @@ def p_error(p):
 parser = yacc.yacc()
 # Test it out
 
+def parse_file(path):
+    with open(path, "r") as f:
+        content = f.read()
 
-def run(hide_tree=False):
+        parse(content, False)
+
+
+def parse_cmd(hide_tree=False):
     while True:
         try:
             s = input("> ")
@@ -272,14 +278,19 @@ def run(hide_tree=False):
             break
         if not s:
             continue
-        ast = None
-        ast = yacc.parse(s)
 
-        if ast is not None:
-            ast = ast.optimize()
-            ast.serve()
+        parse(s, hide_tree)
 
-            graph = Digraph()
-            ast.draw(graph)
-            if not hide_tree:
-                graph.render("ast", format="png", view=True, cleanup=True)
+
+def parse(content, hide_tree):
+    ast = None
+    ast = yacc.parse(content)
+
+    if ast is not None:
+        ast = ast.optimize()
+        ast.serve()
+
+        graph = Digraph()
+        ast.draw(graph)
+        if not hide_tree:
+            graph.render("ast", format="png", view=True, cleanup=True)
