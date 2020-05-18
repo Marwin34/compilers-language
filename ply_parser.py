@@ -113,13 +113,13 @@ def p_program(p):
 
 
 def p_block(p):
-    """ block   : statement ';' block
+    """ block   : statement block
                 | statement """
     statements = []
 
     statements.append(p[1])
-    if ";" in p[1:]:
-        for statement in p[3].get_statements():
+    if len(p) > 2:
+        for statement in p[2].get_statements():
             statements.append(statement)
 
     p[0] = tree.Block(statements)
@@ -215,11 +215,11 @@ def p_relation_operators(p):
     """  relation : expression RELATION expression """
     p[0] = tree.Relation(p[2], p[1], p[3])
 
-
+"""
 def p_unary_minus(p):
     " expression : '-' expression"
     p[0] = tree.UMinus(p[2])
-
+"""
 
 def p_expression_cast(p):
     " expression : CAST '(' statement ',' NAME ')'"
