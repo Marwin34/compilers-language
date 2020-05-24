@@ -20,6 +20,7 @@ tokens = (
     "PRINT",
     "TVASSIGNMENT",
     "CAST",
+    "TYPE_NAME",
 )
 
 literals = ["=", "+", "-", "*", "/", "(", ")", ";", ":", "^", "{", "}", ","]
@@ -67,6 +68,11 @@ def t_FUNCTION(t):
 
 def t_PRINT(t):
     r"print"
+    return t
+
+
+def t_TYPE_NAME(t):
+    r"int|float|string|bool"
     return t
 
 
@@ -190,7 +196,7 @@ def p_args(p):
 
 
 def p_arg_tuple(p):
-    " arg_tuple : NAME ':' NAME"
+    " arg_tuple : NAME ':' TYPE_NAME"
     p[0] = (p[1], p[3])
 
 
