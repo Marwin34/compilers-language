@@ -268,7 +268,7 @@ def p_unary_minus(p):
 
 
 def p_expression_cast(p):
-    " expression : CAST '(' statement ',' NAME ')'"
+    " expression : CAST '(' statement ',' TYPE_NAME ')'"
     p[0] = tree.Cast(p[3], tree.TypeVal(p[5]))
 
 
