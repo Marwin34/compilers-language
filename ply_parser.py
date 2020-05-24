@@ -21,6 +21,8 @@ tokens = (
     "TVASSIGNMENT",
     "CAST",
     "TYPE_NAME",
+    "MATH_FUNCTION",
+    "COMMENT",
 )
 
 literals = ["=", "+", "-", "*", "/", "(", ")", ";", ":", "^", "{", "}", ","]
@@ -73,6 +75,16 @@ def t_PRINT(t):
 
 def t_TYPE_NAME(t):
     r"int|float|string|bool"
+    return t
+
+
+def t_MATH_FUNCTION(t):
+    r"sin|cos"
+    return t
+
+
+def t_COMMENT(t):
+    r"\#.*"
     return t
 
 
@@ -129,6 +141,11 @@ def p_block(p):
             statements.append(statement)
 
     p[0] = tree.Block(statements)
+
+
+def p_statement_comment(p):
+    " statement : COMMENT "
+    p[0] = tree.Comment(p[0])
 
 
 def p_statement_print(p):
@@ -213,6 +230,11 @@ def p_args_val(p):
     p[0] = tree.ArgsVal(args)
 
 
+def p_math_function(p):
+    " statement : MATH_FUNCTION '(' expression ')' "
+    p[0] = tree.MathFunction(p[1], p[3])
+
+
 def p_binary_operators(p):
     """  expression : expression '+' expression
                     | expression '-' expression
@@ -223,7 +245,7 @@ def p_binary_operators(p):
 
 
 def p_relation_operators(p):
-    """  relation : expression RELATION expression """
+    "  relation : expression RELATION expression "
     p[0] = tree.Relation(p[2], p[1], p[3])
 
 
@@ -240,22 +262,22 @@ def p_expression_cast(p):
 
 
 def p_expression_call(p):
-    "expression : NAME '(' args_val ')' "
+    " expression : NAME '(' args_val ')' "
     p[0] = tree.Call(tree.NameVal(p[1]), p[3])
 
 
 def p_expression_call_no_args(p):
-    "expression : NAME '(' ')' "
+    " expression : NAME '(' ')' "
     p[0] = tree.Call(tree.NameVal(p[1]), None)
 
 
 def p_expression_float(p):
-    "expression : FLOAT"
+    " expression : FLOAT"
     p[0] = tree.FloatVal(p[1])
 
 
 def p_expression_integer(p):
-    "expression : INTEGER"
+    " expression : INTEGER"
     p[0] = tree.IntVal(p[1])
 
 
@@ -279,7 +301,6 @@ def p_error(p):
 
 
 parser = yacc.yacc()
-# Test it out
 
 
 def parse_file(path):

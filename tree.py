@@ -5,7 +5,7 @@ import math
 import copy
 
 from scopes import Scopes
-from utils import determine_type, convert_to, valid_type
+from utils import determine_type, convert_to, valid_type, evaluate
 
 functions = {}
 
@@ -101,6 +101,8 @@ class Block(Node):
                 name = statement.name.serve()
                 if name not in self.used_symboles:
                     continue
+            elif type(statement) == Comment:
+                continue
 
             dead_code_free.append(statement)
 
@@ -773,6 +775,33 @@ class Call(Node):
             self.args.draw(graph, self.id)
 
 
+class MathFunction(Node):
+    def __init__(self, function, value):
+        self.function = function
+        self.value = value
+
+        self.id = str(self)
+
+    def serve(self):
+        value = self.value.serve()
+
+        return evaluate(self.function, value)
+
+    def optimize(self, used_symboles=None, optimize_method=None):
+        self.value.optimize(optimize_method=OptimizeMethod.RIGHT)
+
+        return self
+
+    def draw(self, graph, parent_id):
+        graph.node(self.id, "Math function")
+        graph.edge(parent_id, self.id)
+
+        graph.node(f"{self.id}_function", self.function)
+        graph.edge(self.id, f"{self.id}_function")
+
+        self.value.draw(graph, self.id)
+
+
 class FloatVal(Node):
     def __init__(self, value):
         super().__init__()
@@ -920,3 +949,19 @@ class BoolVal(Node):
 
         graph.edge(parent_id, self.id)
         graph.edge(self.id, self.id + "bool")
+
+
+class Comment(Node):
+    def __init__(self, content):
+        self.content = content
+
+        self.id = str(self)
+
+    def serve(self):
+        pass
+
+    def optimize(self, used_symboles=None, optimize_method=None):
+        return self
+
+    def draw(self, graph, parent_id):
+        pass

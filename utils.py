@@ -1,3 +1,4 @@
+import math
 from collections import namedtuple
 
 
@@ -5,6 +6,8 @@ Variable = namedtuple("Variable", ["type", "value"])
 
 TYPES = ["int", "float", "string", "bool"]
 KEYWORDS = ["while", "if", "for", "print", "static_cast"]
+
+math_functions = {"sin": math.sin, "cos": math.cos}
 
 
 def valid_type(type_name):
@@ -47,3 +50,7 @@ def convert_to(value, type_name):
         return bool(value)
     else:
         return None
+
+
+def evaluate(name, value):
+    return math_functions[name](value)
