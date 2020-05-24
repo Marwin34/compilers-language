@@ -95,7 +95,7 @@ def t_COMMENT(t):
 
 
 def t_STRING(t):
-    r"\".*\""
+    r"\"(.*?)\""
     return t
 
 
