@@ -244,6 +244,11 @@ def p_binary_operators(p):
     p[0] = tree.Operator(p[2], p[1], p[3])
 
 
+def p_power_two_star(p):
+    " expression : expression '*' '*' expression"
+    p[0] = tree.Operator('^', p[1], p[4])
+
+
 def p_relation_operators(p):
     "  relation : expression RELATION expression "
     p[0] = tree.Relation(p[2], p[1], p[3])
