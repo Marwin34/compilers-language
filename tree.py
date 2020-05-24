@@ -5,7 +5,7 @@ import math
 import copy
 
 from scopes import Scopes
-from utils import determine_type, convert_to, valid_type, evaluate
+from utils import determine_type, convert_to, valid_type, evaluate, pi
 
 functions = {}
 
@@ -470,7 +470,7 @@ class Print(Node):
         print(value)
         return None
 
-    def optimize(self, used_symboles, optimize_method=None):
+    def optimize(self, used_symboles=None, optimize_method=None):
         self.statement = self.statement.optimize(used_symboles, OptimizeMethod.RIGHT)
         return self
 
@@ -785,10 +785,10 @@ class MathFunction(Node):
     def serve(self):
         value = self.value.serve()
 
-        return evaluate(self.function, value)
+        return round(evaluate(self.function, value), 5)
 
     def optimize(self, used_symboles=None, optimize_method=None):
-        self.value.optimize(optimize_method=OptimizeMethod.RIGHT)
+        self.value.optimize(used_symboles, optimize_method=OptimizeMethod.RIGHT)
 
         return self
 
@@ -949,6 +949,21 @@ class BoolVal(Node):
 
         graph.edge(parent_id, self.id)
         graph.edge(self.id, self.id + "bool")
+
+
+class Pi(Node):
+    def __init__(self):
+        self.id = str(self)
+
+    def serve(self):
+        return pi
+
+    def optimize(self, used_symboles=None, optimize_method=None):
+        return self
+
+    def draw(self, graph, parent_id):
+        graph.node(self.id, "PI")
+        graph.edge(parent_id, self.id)
 
 
 class Comment(Node):

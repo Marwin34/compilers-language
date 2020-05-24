@@ -23,6 +23,7 @@ tokens = (
     "TYPE_NAME",
     "MATH_FUNCTION",
     "COMMENT",
+    "PI",
 )
 
 literals = ["=", "+", "-", "*", "/", "(", ")", ";", ":", "^", "{", "}", ","]
@@ -80,6 +81,11 @@ def t_TYPE_NAME(t):
 
 def t_MATH_FUNCTION(t):
     r"sin|cos"
+    return t
+
+
+def t_PI(t):
+    r"PI"
     return t
 
 
@@ -230,11 +236,6 @@ def p_args_val(p):
     p[0] = tree.ArgsVal(args)
 
 
-def p_math_function(p):
-    " statement : MATH_FUNCTION '(' expression ')' "
-    p[0] = tree.MathFunction(p[1], p[3])
-
-
 def p_binary_operators(p):
     """  expression : expression '+' expression
                     | expression '-' expression
@@ -244,9 +245,14 @@ def p_binary_operators(p):
     p[0] = tree.Operator(p[2], p[1], p[3])
 
 
+def p_math_function(p):
+    " expression : MATH_FUNCTION '(' expression ')' "
+    p[0] = tree.MathFunction(p[1], p[3])
+
+
 def p_power_two_star(p):
     " expression : expression '*' '*' expression"
-    p[0] = tree.Operator('^', p[1], p[4])
+    p[0] = tree.Operator("^", p[1], p[4])
 
 
 def p_relation_operators(p):
@@ -299,6 +305,11 @@ def p_expression_string(p):
 def p_expression_bool(p):
     " expression : BOOL"
     p[0] = tree.BoolVal(p[1])
+
+
+def p_expression_pi(p):
+    " expression : PI"
+    p[0] = tree.Pi()
 
 
 def p_error(p):
