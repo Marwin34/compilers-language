@@ -313,7 +313,11 @@ def p_expression_pi(p):
 
 
 def p_error(p):
-    print(f"Syntax error in input.")
+    if p:
+        print(f"Syntax error at token {p.value}.")
+        parser.errok()
+    else:
+        print("Syntax error at EOF")
 
 
 parser = yacc.yacc()
