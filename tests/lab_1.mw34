@@ -1,0 +1,11 @@
+print(10)
+print(10023.1)
+print(0.0)
+i: int
+i=10
+print(i)
+j: float
+j=10.1
+print(j)
+a:=10
+print(a)
