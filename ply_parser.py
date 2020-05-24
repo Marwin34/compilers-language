@@ -80,7 +80,7 @@ def t_TYPE_NAME(t):
 
 
 def t_MATH_FUNCTION(t):
-    r"sin|cos"
+    r"sin|cos|exp|sqrt|log"
     return t
 
 

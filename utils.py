@@ -5,9 +5,27 @@ from collections import namedtuple
 Variable = namedtuple("Variable", ["type", "value"])
 
 TYPES = ["int", "float", "string", "bool"]
-KEYWORDS = ["while", "if", "for", "print", "static_cast", "PI"]
+KEYWORDS = [
+    "while",
+    "if",
+    "for",
+    "print",
+    "static_cast",
+    "sin",
+    "cos",
+    "exp",
+    "sqrt",
+    "log",
+    "PI",
+]
 
-math_functions = {"sin": math.sin, "cos": math.cos}
+math_functions = {
+    "sin": math.sin,
+    "cos": math.cos,
+    "exp": math.exp,
+    "sqrt": math.sqrt,
+    "log": math.log,
+}
 
 pi = math.pi
 
