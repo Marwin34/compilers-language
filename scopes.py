@@ -115,14 +115,11 @@ class Scopes:
         try:
             if top.assign(v_name, v_value):
                 return None
-        except VariableTypeError as e:
-            print(e.message)
-
-        try:
-            if bottom.assign(v_name, v_value):
+            elif bottom.assign(v_name, v_value):
                 return None
         except VariableTypeError as e:
             print(e.message)
+            return None
 
         print(f"{v_name} not decleared.")
 
