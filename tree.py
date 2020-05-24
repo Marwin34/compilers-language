@@ -733,7 +733,7 @@ class Call(Node):
                     return res
             else:
                 if args_val is not None and function["args"] is None:
-
+                    print(f"Too many arguments in function {name}.")
                     return None
                 if len(args_val) != len(function["args"]):
                     print(f"Arguments count missmatch in function {name}.")

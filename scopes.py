@@ -110,16 +110,13 @@ class Scopes:
         return None
 
     def assign(self, v_name, v_value):
-        top = self.scopes_list[-1]
-        bottom = self.scopes_list[0]
-        try:
-            if top.assign(v_name, v_value):
+        for scope in reversed(self.scopes_list):
+            try:
+                if scope.assign(v_name, v_value):
+                    return None
+            except VariableTypeError as e:
+                print(e.message)
                 return None
-            elif bottom.assign(v_name, v_value):
-                return None
-        except VariableTypeError as e:
-            print(e.message)
-            return None
 
         print(f"{v_name} not decleared.")
 
