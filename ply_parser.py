@@ -149,6 +149,11 @@ def p_block(p):
     p[0] = tree.Block(statements)
 
 
+def p_statement_instruction_block(p):
+    " statement : '{' block '}'"
+    p[0] = tree.InstructionBlock(p[2])
+
+
 def p_statement_comment(p):
     " statement : COMMENT "
     p[0] = tree.Comment(p[0])

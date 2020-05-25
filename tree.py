@@ -124,6 +124,26 @@ class Block(Node):
         return self.statements
 
 
+class InstructionBlock(Node):
+    def __init__(self, block):
+        self.block = block
+
+        self.id = str(self)
+
+    def serve(self):
+        scopes.add_scope()
+        self.block.serve()
+        scopes.remove_scope()
+
+    def optimize(self, used_symboles, optimize_method):
+        self.block.optimize(used_symboles, OptimizeMethod.LEFT)
+        return self
+
+    def draw(self, graph, parent_id):
+        graph.node(self.id, "Instrution block")
+        self.block.draw(graph, self.id)
+
+
 class UMinus(Node):
     def __init__(self, statement):
         super().__init__()
