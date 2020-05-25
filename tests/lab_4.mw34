@@ -1,0 +1,69 @@
+# 1
+print("Task 1 tests:")
+function hello_world() = {
+    print("Hello world!")
+}
+
+function stargazer(x : int) = {
+    while(x < 10){
+        print("Give a star on github if it is useful.")
+        x = x + 1
+    }
+}
+
+hello_world()
+
+stargazer(5)
+
+# 2
+print("Task 2 tests:")
+i := 10
+
+{
+    print(i)
+    j := i * 10
+    print(j)
+}
+
+# 3
+print("Task 3 tests:")
+function test() = {
+    print(m)
+}
+
+m := 10
+
+{
+    print(m)
+    j := i * 10
+    print(j)
+}
+
+{
+    print(j)
+    print(m)
+}
+
+print(m)
+test()
+
+# 4
+print("Task 4 tests:")
+function task4(message : string, n : int) = {
+    for(i := 0; i < n; i = i + 1){
+        print(message)
+    }
+}
+
+task4("Not staring s a bad habit :(", 3)
+
+# 5
+print("Task 5 tests:")
+function task5(x : int) = {
+    print(x + 10)
+}
+
+y := 10.5
+print(y + 10)
+task5(y)
+print(y)
