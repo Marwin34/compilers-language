@@ -391,7 +391,7 @@ class Operator(Node):
 
             if self.operator == "*":
                 if left_part == 0:
-                    return self.left_part
+                    return IntVal(0)
                 elif left_part == 1:
                     return self.right_part
                 elif left_part == 2:
@@ -405,10 +405,9 @@ class Operator(Node):
             type(self.right_part) == IntVal or type(self.right_part) == FloatVal
         ):
             right_part = self.right_part.serve()
-
             if self.operator == "+":
                 if right_part == 0:
-                    return self.right_part
+                    return self.left_part
 
             if self.operator == "-":
                 if right_part == 0:
@@ -416,7 +415,7 @@ class Operator(Node):
 
             if self.operator == "*":
                 if right_part == 0:
-                    return self.right_part
+                    return IntVal(0)
                 elif right_part == 1:
                     return self.left_part
                 elif right_part == 2:
@@ -426,11 +425,11 @@ class Operator(Node):
                 if right_part == 1:
                     return self.left_part
                 elif right_part == 2:
-                    return Operator("*", self.left_part, 0.5)
+                    return Operator("*", self.left_part, FloatVal(0.5))
 
             if self.operator == "^":
                 if right_part == 0:
-                    return self.IntVal(1)
+                    return IntVal(1)
                 elif right_part == 1:
                     return self.left_part
                 elif right_part == 2:
