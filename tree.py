@@ -141,6 +141,8 @@ class InstructionBlock(Node):
 
     def draw(self, graph, parent_id):
         graph.node(self.id, "Instrution block")
+        graph.edge(parent_id, self.id)
+
         self.block.draw(graph, self.id)
 
 
