@@ -1,0 +1,60 @@
+# 1
+print("Task 1 tests:")
+function inside(x : int) = {
+    for(i := 0; i < x; i = i + 1){
+        print("Call from inside function!")
+    }
+}
+
+function outside() = {
+    print("Call from outside function.")
+    inside(3)
+    print("Call from outside function.")
+}
+
+outside()
+
+# 2 (only deletion of unused variables and function definitions)
+print("Task 2 tests:")
+i := 10
+j : float
+j = 10.5
+b := 10
+print(b)
+
+function test() = {
+    print("Removed from graph.")
+}
+
+function test2() = {
+    print("Not removed from graph!")
+}
+
+test2()
+
+# now check the graph
+
+# 3 wont be implemented
+
+# 4
+print("Task 4 tests:")
+x := 10
+z := static_cast(x, float)
+print(x + 0)
+print(0 + x)
+print(x - 0)
+print(x * 0)
+print(0 * x)
+print(x * 1)
+print(1 * x)
+print(x * 2)
+print(2 * x)
+print(x / 1)
+print(z / 2)
+print(x ^ 0)
+print(0 ^ x)
+print(x ^ 1)
+print(1 ^ x)
+print(5 + 5)
+
+# 5 wont be implemented
