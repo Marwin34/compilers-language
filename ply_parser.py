@@ -135,6 +135,9 @@ def t_error(t):
     t.lexer.skip(1)
 
 
+lexer = lex.lex()
+
+
 def p_program(p):
     " program   : block"
     p[0] = tree.Program(p[1])
@@ -324,6 +327,9 @@ def p_error(p):
         print("Syntax error at EOF")
 
 
+parser = yacc.yacc()
+
+
 def parse_file(path, verbose=False):
     with open(path, "r") as f:
         content = f.read()
@@ -344,11 +350,8 @@ def parse_cmd(hide_tree=False, verbose=False):
 
 
 def parse(content, hide_tree, verbose):
-    lexer = lex.lex()
-    parser = yacc.yacc()
-
     if verbose:
-        print_tokens(lexer, content)
+        print_tokens(content)
 
     ast = None
     ast = yacc.parse(content)
@@ -363,7 +366,7 @@ def parse(content, hide_tree, verbose):
             graph.render("ast", format="png", view=True, cleanup=True)
 
 
-def print_tokens(lexer, content):
+def print_tokens(content):
     print("-------------------------TOKENS----------------------------")
     print("-----------------------------------------------------------")
     # Give the lexer some input
