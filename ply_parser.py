@@ -31,6 +31,7 @@ literals = ["=", "+", "-", "*", "/", "(", ")", ";", ":", "^", "{", "}", ","]
 
 def t_FLOAT(t):
     r"\d+\.\d+|\.\d+"
+    # print(t)
     return t
 
 
@@ -126,9 +127,6 @@ precedence = (
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
-
-
-lexer = lex.lex()
 
 
 def p_program(p):
@@ -325,17 +323,14 @@ def p_error(p):
         print("Syntax error at EOF")
 
 
-parser = yacc.yacc()
-
-
-def parse_file(path):
+def parse_file(path, verbose=False):
     with open(path, "r") as f:
         content = f.read()
 
-        parse(content, False)
+        parse(content, False, verbose)
 
 
-def parse_cmd(hide_tree=False):
+def parse_cmd(hide_tree=False, verbose=False):
     while True:
         try:
             s = input("> ")
@@ -344,10 +339,16 @@ def parse_cmd(hide_tree=False):
         if not s:
             continue
 
-        parse(s, hide_tree)
+        parse(s, hide_tree, verbose)
 
 
-def parse(content, hide_tree):
+def parse(content, hide_tree, verbose):
+    lexer = lex.lex()
+    parser = yacc.yacc()
+
+    if verbose:
+        print_tokens(lexer, content)
+
     ast = None
     ast = yacc.parse(content)
 
@@ -359,3 +360,20 @@ def parse(content, hide_tree):
         ast.draw(graph)
         if not hide_tree:
             graph.render("ast", format="png", view=True, cleanup=True)
+
+
+def print_tokens(lexer, content):
+    print("-------------------------TOKENS----------------------------")
+    print("-----------------------------------------------------------")
+    # Give the lexer some input
+    lexer.input(content)
+
+    # Tokenize
+    while True:
+        tok = lexer.token()
+        if not tok:
+            break  # No more input
+        print(tok)
+
+    print("-----------------------------------------------------------")
+    print("--------------------INTERPRETATION-------------------------\n")
