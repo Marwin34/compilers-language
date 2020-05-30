@@ -31,7 +31,6 @@ literals = ["=", "+", "-", "*", "/", "(", ")", ";", ":", "^", "{", "}", ","]
 
 def t_FLOAT(t):
     r"\d+\.\d+|\.\d+"
-    # print(t)
     return t
 
 
@@ -82,6 +81,13 @@ def t_TYPE_NAME(t):
 
 def t_MATH_FUNCTION(t):
     r"sin|cos|exp|sqrt|log"
+    return t
+
+
+def t_TWOSTAR(t):
+    r"\*\*"
+    t.type = "^"
+    t.value = "^"
     return t
 
 
@@ -251,11 +257,6 @@ def p_binary_operators(p):
 def p_math_function(p):
     " expression : MATH_FUNCTION '(' expression ')' "
     p[0] = tree.MathFunction(p[1], p[3])
-
-
-def p_power_two_star(p):
-    " expression : expression '*' '*' expression"
-    p[0] = tree.Operator("^", p[1], p[4])
 
 
 def p_relation_operators(p):
