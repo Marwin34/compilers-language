@@ -5,7 +5,7 @@ import math
 import copy
 
 from scopes import Scopes
-from utils import determine_type, convert_to, valid_type, evaluate, pi
+from utils import determine_type, convert_to, valid_type, evaluate, pi, type_to_string
 
 functions = {}
 
@@ -178,7 +178,7 @@ class Condition(Node):
     def serve(self):
         condition_value = self.condition.serve()
         if type(condition_value) is not bool:
-            print(f"Invalid syntax: condition is not a bool type.")
+            print(f"Condition type missmatch, got {type_to_string(condition_value)}.")
             return None
 
         if condition_value:
@@ -351,7 +351,7 @@ class Operator(Node):
 
         if type(left_part) != type(right_part):
             print(
-                f"Operator values types missmatch {type(left_part)}, {type(right_part)}."
+                f"Operator values types missmatch {type_to_string(left_part)}, {type_to_string(right_part)}."
             )
             return None
 

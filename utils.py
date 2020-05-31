@@ -74,3 +74,17 @@ def convert_to(value, type_name):
 
 def evaluate(name, value):
     return math_functions[name](value)
+
+
+def type_to_string(var):
+    type_of_var = type(var).__name__
+    if type_of_var == int.__name__:
+        return "IntVal"
+    elif type_of_var == float.__name__:
+        return "FloatVal"
+    elif type_of_var == str.__name__:
+        return "StringVal"
+    elif type_of_var == bool.__name__:
+        return "BoolVal"
+    else:
+        return "Unknown type"
