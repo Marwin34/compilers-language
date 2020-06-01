@@ -167,7 +167,7 @@ class UMinus(Node):
         self.statement.draw(graph, self.id)
 
 
-class Condition(Node):
+class If(Node):
     def __init__(self, condition, action):
         super().__init__()
 
@@ -196,11 +196,11 @@ class Condition(Node):
         return self
 
     def draw(self, graph, parent_id):
-        graph.node(self.id, "Condition")
+        graph.node(self.id, "If")
         graph.edge(parent_id, self.id)
 
-        self.condition.draw(graph, parent_id)
-        self.action.draw(graph, parent_id)
+        self.condition.draw(graph, self.id)
+        self.action.draw(graph, self.id)
 
 
 class While(Node):
@@ -284,6 +284,7 @@ class For(Node):
         graph.edge(parent_id, self.id)
 
         self.init.draw(graph, self.id)
+        self.step.draw(graph, self.id)
         self.condition.draw(graph, self.id)
         self.block.draw(graph, self.id)
 

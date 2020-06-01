@@ -20,7 +20,6 @@ tokens = (
     "PRINT",
     "TVASSIGNMENT",
     "CAST",
-    "TYPE_NAME",
     "MATH_FUNCTION",
     "COMMENT",
     "PI",
@@ -71,11 +70,6 @@ def t_FUNCTION(t):
 
 def t_PRINT(t):
     r"print"
-    return t
-
-
-def t_TYPE_NAME(t):
-    r"int|float|string|bool"
     return t
 
 
@@ -173,7 +167,7 @@ def p_statement_print(p):
 
 def p_statement_condition(p):
     " statement : IF '(' statement ')' '{' block '}' "
-    p[0] = tree.Condition(p[3], p[6])
+    p[0] = tree.If(p[3], p[6])
 
 
 def p_statement_while(p):
@@ -231,7 +225,7 @@ def p_args(p):
 
 
 def p_arg_tuple(p):
-    " arg_tuple : NAME ':' TYPE_NAME"
+    " arg_tuple : NAME ':' NAME"
     p[0] = (p[1], p[3])
 
 
@@ -275,7 +269,7 @@ def p_unary_minus(p):
 
 
 def p_expression_cast(p):
-    " expression : CAST '(' statement ',' TYPE_NAME ')'"
+    " expression : CAST '(' statement ',' NAME ')'"
     p[0] = tree.Cast(p[3], tree.TypeVal(p[5]))
 
 
